@@ -91,9 +91,3 @@ def text_to_textnodes(text):
     nodes = split_nodes_link(nodes)
     nodes = split_nodes_image(nodes)
     return nodes
-
-def markdown_to_blocks(markdown):
-    blocks = markdown.split("\n\n")
-    blocks = map(lambda x: x.strip(), blocks)
-    blocks = filter(lambda x: x, blocks)
-    return list(blocks)
