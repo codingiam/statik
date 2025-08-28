@@ -1,5 +1,6 @@
 import os
 
+from config import Config
 from markdown_blocks import markdown_to_html_node
 
 def extract_title(markdown):
@@ -25,6 +26,7 @@ def generate_page(from_path, template_path, dest_path):
     title = extract_title(markdown)
 
     template = template.replace("{{ Title }}", title).replace("{{ Content }}", html)
+    template = template.replace("href=\"/", Config.basepath).replace("src=\"/", Config.basepath)
 
     with open(dest_path, "w") as dest_file:
         dest_file.write(template)
