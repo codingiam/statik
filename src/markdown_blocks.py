@@ -5,7 +5,7 @@ from htmlnode import HTMLNode
 from leafnode import LeafNode
 from parentnode import ParentNode
 from textnode import text_node_to_html_node, TextNode, TextType
-from utils import text_to_textnodes
+from inline_markdown import text_to_textnodes
 
 
 class BlockType(Enum):

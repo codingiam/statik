@@ -1,6 +1,17 @@
 import re
 
-from textnode import TextType, TextNode
+from textnode import TextNode, TextType
+
+
+def text_to_textnodes(text: str) -> list[TextNode]:
+    nodes = [TextNode(text, TextType.TEXT)]
+    nodes = split_nodes_delimiter(nodes, "**", TextType.BOLD)
+    nodes = split_nodes_delimiter(nodes, "_", TextType.ITALIC)
+    nodes = split_nodes_delimiter(nodes, "`", TextType.CODE)
+    nodes = split_nodes_link(nodes)
+    nodes = split_nodes_image(nodes)
+    return nodes
+
 
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
     nodes = []
@@ -20,19 +31,6 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
                 nodes.append(TextNode(parts[i], text_type))
     return nodes
 
-def extract_markdown_images(text, iter = False):
-    pattern = r"!\[([^\[\]]*)\]\(([^\(\)]*)\)"
-    if not iter:
-        return re.findall(pattern, text)
-    else:
-        return list(re.finditer(pattern, text))
-
-def extract_markdown_links(text, iter = False):
-    pattern = r"(?<!!)\[([^\[\]]*)\]\(([^\(\)]*)\)"
-    if not iter:
-        return re.findall(pattern, text)
-    else:
-        return list(re.finditer(pattern, text))
 
 def split_nodes_image(old_nodes):
     nodes = []
@@ -83,11 +81,18 @@ def split_nodes_link(old_nodes):
 
     return nodes
 
-def text_to_textnodes(text: str) -> list[TextNode]:
-    nodes = [TextNode(text, TextType.TEXT)]
-    nodes = split_nodes_delimiter(nodes, "**", TextType.BOLD)
-    nodes = split_nodes_delimiter(nodes, "_", TextType.ITALIC)
-    nodes = split_nodes_delimiter(nodes, "`", TextType.CODE)
-    nodes = split_nodes_link(nodes)
-    nodes = split_nodes_image(nodes)
-    return nodes
+
+def extract_markdown_images(text, iter = False):
+    pattern = r"!\[([^\[\]]*)\]\(([^\(\)]*)\)"
+    if not iter:
+        return re.findall(pattern, text)
+    else:
+        return list(re.finditer(pattern, text))
+
+
+def extract_markdown_links(text, iter = False):
+    pattern = r"(?<!!)\[([^\[\]]*)\]\(([^\(\)]*)\)"
+    if not iter:
+        return re.findall(pattern, text)
+    else:
+        return list(re.finditer(pattern, text))
