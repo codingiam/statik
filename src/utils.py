@@ -20,10 +20,65 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
                 nodes.append(TextNode(parts[i], text_type))
     return nodes
 
-def extract_markdown_images(text):
+def extract_markdown_images(text, iter = False):
     pattern = r"!\[([^\[\]]*)\]\(([^\(\)]*)\)"
-    return re.findall(pattern, text)
+    if not iter:
+        return re.findall(pattern, text)
+    else:
+        return list(re.finditer(pattern, text))
 
-def extract_markdown_links(text):
+def extract_markdown_links(text, iter = False):
     pattern = r"(?<!!)\[([^\[\]]*)\]\(([^\(\)]*)\)"
-    return re.findall(pattern, text)
+    if not iter:
+        return re.findall(pattern, text)
+    else:
+        return list(re.finditer(pattern, text))
+
+def split_nodes_image(old_nodes):
+    nodes = []
+    for node in old_nodes:
+        if node.text_type != TextType.TEXT:
+            nodes.append(node)
+            continue
+        text = node.text
+        images = extract_markdown_images(text, iter=True)
+        if images:
+            last_end = 0
+            for match in images:
+                start, end = match.span()
+                if start > last_end:
+                    nodes.append(TextNode(text[last_end:start], TextType.TEXT))
+                link_text, href = match.groups()
+                nodes.append(TextNode(link_text, TextType.IMAGE, href))
+                last_end = end
+            if last_end < len(text):
+                nodes.append(TextNode(text[last_end:], TextType.TEXT))
+        else:
+            nodes.append(node)
+
+    return nodes
+
+
+def split_nodes_link(old_nodes):
+    nodes = []
+    for node in old_nodes:
+        if node.text_type != TextType.TEXT:
+            nodes.append(node)
+            continue
+        text = node.text
+        links = extract_markdown_links(text, iter=True)
+        if links:
+            last_end = 0
+            for match in links:
+                start, end = match.span()
+                if start > last_end:
+                    nodes.append(TextNode(text[last_end:start], TextType.TEXT))
+                link_text, href = match.groups()
+                nodes.append(TextNode(link_text, TextType.LINK, href))
+                last_end = end
+            if last_end < len(text):
+                nodes.append(TextNode(text[last_end:], TextType.TEXT))
+        else:
+            nodes.append(node)
+
+    return nodes
