@@ -41,7 +41,7 @@ def markdown_to_blocks(markdown):
     blocks = filter(lambda x: x, blocks)
     return list(blocks)
 
-def markdown_to_html_node(markdown):
+def markdown_to_html_node(markdown: str) -> HTMLNode:
     blocks = markdown_to_blocks(markdown)
     children = []
     for block in blocks:
